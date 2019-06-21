@@ -1,0 +1,99 @@
+DROP DATABASE IF EXISTS controleFinanceiro;
+CREATE DATABASE controleFinanceiro;
+select database controleFinanceiro;
+
+DROP TABLE IF EXISTS EXTRATO;
+
+DROP TABLE IF EXISTS CARTAO_has_LANCAMENTO;
+
+DROP TABLE IF EXISTS CARTAO;
+
+DROP TABLE IF EXISTS LANCAMENTO;
+
+DROP TABLE IF EXISTS USUARIO;
+
+DROP TABLE IF EXISTS TIPO_USR;
+
+DROP TABLE IF EXISTS TIPO_LANC;
+
+ SET character_set_client = utf8mb4 ; 
+
+
+CREATE TABLE TipoLancamento (
+  idTipoLancamento INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  nomeTipoLancamento VARCHAR(100) NOT NULL,
+  PRIMARY KEY(idTipoLancamento)
+);
+
+CREATE TABLE TipoUsuario (
+  idTipoUsuario INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  nomeTipoUsuario VARCHAR(100) NOT NULL,
+  PRIMARY KEY(idTipoUsuario)
+);
+
+CREATE TABLE Usuario (
+  idUsuario INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  idTipoUsuario INTEGER UNSIGNED NOT NULL,
+  nomeUsuario VARCHAR(100) NOT NULL,
+  PRIMARY KEY(idUsuario),
+  FOREIGN KEY(idTipoUsuario)
+    REFERENCES TipoUsuario(idTipoUsuario)
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
+);
+
+CREATE TABLE Lancamento (
+  idLancamento INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  idTipoLancamento INTEGER UNSIGNED NOT NULL,
+  nomeLancamento VARCHAR(100) NOT NULL,
+  dataLancamento DATE NOT NULL,
+  valorLancamento FLOAT ZEROFILL NOT NULL,
+  qtdeParcelas INTEGER UNSIGNED NOT NULL DEFAULT 1,
+  PRIMARY KEY(idLancamento),
+  FOREIGN KEY(idTipoLancamento)
+    REFERENCES TipoLancamento(idTipoLancamento)
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
+);
+
+CREATE TABLE Cartao (
+  idCartao INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  idUsuario INTEGER UNSIGNED NOT NULL,
+  nomeCartao VARCHAR(100) NOT NULL,
+  bandeiraCartao VARCHAR(100) NOT NULL,
+  PRIMARY KEY(idCartao),
+  FOREIGN KEY(idUsuario)
+    REFERENCES Usuario(idUsuario)
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
+);
+
+CREATE TABLE CARTAO_has_LANCAMENTO (
+  idCartao INTEGER UNSIGNED NOT NULL,
+  idLancamento INTEGER UNSIGNED NOT NULL,
+  PRIMARY KEY(idCartao, idLancamento),
+  FOREIGN KEY(idCartao)
+    REFERENCES Cartao(idCartao)
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION,
+  FOREIGN KEY(idLancamento)
+    REFERENCES Lancamento(idLancamento)
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
+);
+
+CREATE TABLE Extrato (
+  idUsuario INTEGER UNSIGNED NOT NULL,
+  idLancamento INTEGER UNSIGNED NOT NULL,
+  PRIMARY KEY(idUsuario, idLancamento),
+  FOREIGN KEY(IdLancamento)
+    REFERENCES Lancamento(idLancamento)
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION,
+  FOREIGN KEY(idUsuario)
+    REFERENCES Usuario(idUsuario)
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
+);
+
+
